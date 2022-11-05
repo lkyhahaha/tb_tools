@@ -1,0 +1,17 @@
+-- 价格库存对比
+SELECT
+	r.product_name AS "商品名称",
+	r.name_taobao AS "颜色分类",
+	ps.price AS "淘宝定价",
+	psa.sku_price AS "1688代发价",
+	round(ps.price - psa.sku_price, 2) AS "单件利润",
+	round(
+		(ps.price - psa.sku_price) / ps.price,
+		2
+	) AS "利润率",
+	ps.stock AS "淘宝库存",
+	psa.sku_stock AS "1688库存"
+FROM
+	relationship r
+LEFT JOIN price_stock ps ON r.skuid_taobao = ps.sku
+LEFT JOIN price_stock_1688 psa ON r.skuid_1688 = psa.sku
