@@ -2,6 +2,9 @@
 
 # 问题1：有商品有规格选项和颜色选项，执行会报错，要加个判断（举例：抓娃娃机）
 
+# 问题2：除了前3个颜色的名称能抓取到，后面的颜色名称抓取成功率低
+# 原因：可能是页面上没加载出来？加了向下滚动至按钮可见试试
+
 # 优化1：一开始的滑块验证
 # 优化2：获取当前时间，updatetime入库
 # 优化3：淘宝和1688的关联关系（研究千牛）
@@ -55,8 +58,10 @@ def getsku():
         except:
             print("抓取第" + str(i) + "个sku库存失败")
 
-        sql_product = 'insert into price_stock_1688(productId,product_name,sku,sku_name,sku_price,sku_stock,product_url) values (\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\")' % (
-            itemid, product_name, skuid, skuname, skuprice, skustock, url)
+        update_time=taobao.getCuurenttime()
+
+        sql_product = 'insert into price_stock_1688(productId,product_name,sku,sku_name,sku_price,sku_stock,product_url,update_time) values (\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\")' % (
+            itemid, product_name, skuid, skuname, skuprice, skustock, url,update_time)
         taobao.controldb(mysql_obj, sql_product)
 
 
@@ -93,6 +98,8 @@ if __name__ == '__main__':
 
         try:
             morebutton = driver.find_element_by_class_name("sku-wrapper-expend-button")
+            # 向下滚动至按钮可见
+            driver.execute_script("arguments[0].scrollIntoView();", morebutton)
             morebutton.click()
             sleep(2)
             getsku()

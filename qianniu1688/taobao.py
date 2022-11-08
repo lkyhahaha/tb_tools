@@ -3,20 +3,18 @@
 # 问题1：可能是cookie失效导致item()获取title和name为空
 # 解决方法：多个cookie存放在数组里，检测title为空用下一个
 # 问题2：成功的日志不知道加在哪
+# 解决办法：while判断条件改为判断数组的个数，而不是判断是否抓取成功
 # 问题3：detail()部分itemid有时会报错，原因大概率是防爬，换cookie也没用
 # 报错：raise JSONDecodeError("Expecting value", s, err.value) from None
 # json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
 
 # 优化1：获取当前时间，updatetime入库
-
-
-
+import datetime
 
 from lxml import html
 import re
 import json
 from time import sleep
-from time import time
 
 import requests
 from retrying import retry
@@ -29,6 +27,12 @@ def getJson(str):
     result_str = re.findall(p1, str)[0]
     result_json = json.loads(result_str)
     return result_json
+
+
+def getCuurenttime():
+    now = datetime.datetime.now()
+    current_time = datetime.datetime.strftime(now, '%Y-%m-%d %H:%M:%S')
+    return current_time
 
 
 def controldb(mysql_obj, sql):
@@ -74,12 +78,12 @@ def detail(url, cookies, headers):
             stock = 0
         # print(stock)
 
-        # now= time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-        # print(now)
+        update_time = getCuurenttime()
+
         # 把数据写入数据库
 
-        sql = 'insert into price_stock(itemid,itemurl,sku,price,stock) values (\"%s\",\"%s\",\"%s\",\"%s\",\"%s\")' % (
-            itemid, itemurl, newsku, price, stock)
+        sql = 'insert into price_stock(itemid,itemurl,sku,price,stock,update_time) values (\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\")' % (
+            itemid, itemurl, newsku, price, stock, update_time)
 
         controldb(mysql_obj, sql)
 
@@ -106,6 +110,10 @@ def item(url, cookies, headers):
             print(newsku + name)
             sql = 'update price_stock set sku_title=\"%s\" where itemid=\"%s\" and sku=\"%s\"' % (name, itemid, newsku)
             controldb(mysql_obj, sql)
+        update_time = getCuurenttime()
+        sql = 'update price_stock set update_time=\"%s\" where itemid=\"%s\" and sku=\"%s\"' % (
+        update_time, itemid, newsku)
+        controldb(mysql_obj, sql)
 
     if i == []:
         title_none = 1
@@ -173,7 +181,6 @@ if __name__ == '__main__':
             else:
                 print("失败cookies[" + str(i) + "]")
                 i += 1
-
 
         sleep(10)
 
