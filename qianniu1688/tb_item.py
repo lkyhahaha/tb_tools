@@ -49,7 +49,7 @@ if __name__ == '__main__':
     # 判断是否有下一页
     count = page_count
     while count < total:
-        # n += 1
+        n += 1
         # # 通过url实现翻页(url和n的拼装在上面，拼装n+1后的结果要在重新给url赋值)
         # url = "https://shop330863453.taobao.com/search.htm?spm=a1z10.3-c.w4002-24537816225.9.6d3f6f734UhVfz&_ksTS=1667309300936_121&callback=jsonp122&input_charset=gbk&mid=w-24537816225-0&wid=24537816225&path=%2Fsearch.htm&search=y&viewType=list&pageNo=" + str(
         #     n)
