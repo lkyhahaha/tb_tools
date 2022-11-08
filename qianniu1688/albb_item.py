@@ -6,6 +6,9 @@
 # 3.通过判断“下一页”按钮是否可点击，while循环进入下一页，获取下一页的信息，继续存入product字典
 # 4.利用for循环和if...else...对不同销售状态的商品id进行处理，存入不同的数组
 
+# 问题：
+# 前4个商品的状态为空，后面的商品状态正常
+
 from selenium import webdriver
 from time import sleep
 
