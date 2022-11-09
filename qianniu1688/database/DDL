@@ -22,11 +22,13 @@ CREATE TABLE `price_stock_1688` (
   `update_time` varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- relationship 淘宝货源商品关系表
-CREATE TABLE `relationship` (
-  `product_name` varchar(255) DEFAULT NULL,
-  `skuid_taobao` varchar(150) DEFAULT NULL,
-  `name_taobao` varchar(150) DEFAULT NULL,
-  `skuid_1688` varchar(150) DEFAULT NULL,
-  `name_1688` varchar(150) DEFAULT NULL
+-- relation 淘宝货源商品关系表(淘宝在售和已下架，且规格已匹配的商品)
+CREATE TABLE `relation` (
+  `item_name` varchar(250) DEFAULT NULL,
+  `item_id` varchar(100) DEFAULT NULL,
+  `item_sku_name` varchar(250) DEFAULT NULL,
+  `offer_id` varchar(100) DEFAULT NULL,
+  `offer_sku_name` varchar(250) DEFAULT NULL,
+  `update_time` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
