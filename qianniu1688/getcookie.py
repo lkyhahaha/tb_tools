@@ -16,11 +16,11 @@ password.click()
 password.send_keys("Lky965823-")
 submit = driver.find_element_by_xpath("//*[@id='login-form']/div[4]/button")
 submit.click()
-sleep(3)
+sleep(60)
 
 cookieset = []
 i = 1
-while i < 15:
+while i < 8:
     driver.get(url)
     cookie_list = driver.get_cookies()
     cookie = [item["name"] + "=" + item["value"] for item in cookie_list]
