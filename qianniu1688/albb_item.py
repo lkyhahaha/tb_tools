@@ -101,8 +101,8 @@ if __name__ == '__main__':
     url = "https://guanjia.1688.com/page/consignoffer.htm?menuCode=consignoffer"
     product = {}
     n = 1
-    un = "15521080769"
-    pw = "Lky965823-"
+    un = ""
+    pw = ""
 
     driver.get(url)
     # 跳转到登录页面

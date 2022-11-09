@@ -72,7 +72,7 @@ def getsku():
 
         update_time = taobao.getCuurenttime()
 
-        sql_product = 'insert into price_stock_1688_copy(productId,product_name,sku,sku_name,sku_price,sku_stock,product_url,update_time) values (\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\")' % (
+        sql_product = 'insert into price_stock_1688(productId,product_name,sku,sku_name,sku_price,sku_stock,product_url,update_time) values (\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\")' % (
             itemid, product_name, skuid, skuname, skuprice, skustock, url, update_time)
         taobao.controldb(mysql_obj, sql_product)
 
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     mysql_obj = connect(host='localhost', user='root', password='', db='taobao_data', port=3306,
                         charset='utf8mb4')
     print("数据库连接成功")
-    sql_truncate = 'truncate table price_stock_1688_copy'
+    sql_truncate = 'truncate table price_stock_1688'
     taobao.controldb(mysql_obj, sql_truncate)
 
     option = ChromeOptions()
