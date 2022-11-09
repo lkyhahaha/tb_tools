@@ -101,6 +101,7 @@ if __name__ == '__main__':
     fail_item = []
     total_item = len(itemids)
     m = 1
+    product = {}
 
     for itemid in itemids:
         url = "https://detail.1688.com/offer/" + itemid + ".html?spm=a261y.7663282.10811813088311.3.5d6b2802L7sleG&sk=consign"
@@ -112,7 +113,6 @@ if __name__ == '__main__':
         #     action.drag_and_drop_by_offset(huakuai,xoffset=300,yoffset=0).perform()
         # except:
         product_name = driver.find_element_by_class_name("title-text").text
-        product = {}
         product[itemid] = product_name
         sku_name = driver.find_elements_by_class_name("sku-item-name")
         sku_count = len(sku_name)
@@ -135,6 +135,7 @@ if __name__ == '__main__':
             fail_item.append(itemid)
         else:
             pass
+    # print(product)
     print("失败商品列表：" + str(fail_item))
     for f in fail_item:
         print(str(f) + ":" + str(product[f]))
