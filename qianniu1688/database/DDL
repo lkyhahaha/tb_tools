@@ -1,0 +1,32 @@
+-- price_stock 淘宝库存价格信息表
+CREATE TABLE `price_stock` (
+  `itemid` varchar(100) NOT NULL,
+  `itemurl` varchar(500) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `sku_title` varchar(255) DEFAULT NULL,
+  `sku` varchar(150) NOT NULL,
+  `price` varchar(50) DEFAULT NULL,
+  `stock` varchar(50) DEFAULT NULL,
+  `update_time` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- price_stock_1688 货源代发库存信息表
+CREATE TABLE `price_stock_1688` (
+  `productId` varchar(250) NOT NULL,
+  `product_name` varchar(500) DEFAULT NULL,
+  `sku` varchar(250) DEFAULT NULL,
+  `sku_name` varchar(250) DEFAULT NULL,
+  `sku_price` varchar(50) DEFAULT NULL,
+  `sku_stock` varchar(50) DEFAULT NULL,
+  `product_url` varchar(500) DEFAULT NULL,
+  `update_time` varchar(200) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- relationship 淘宝货源商品关系表
+CREATE TABLE `relationship` (
+  `product_name` varchar(255) DEFAULT NULL,
+  `skuid_taobao` varchar(150) DEFAULT NULL,
+  `name_taobao` varchar(150) DEFAULT NULL,
+  `skuid_1688` varchar(150) DEFAULT NULL,
+  `name_1688` varchar(150) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

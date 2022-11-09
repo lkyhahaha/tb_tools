@@ -27,7 +27,7 @@ def login():
     submit = driver.find_element_by_class_name("fm-submit")
     submit.click()
     # 休眠手动输入验证码
-    sleep(5)
+    sleep(30)
 
 
 # 获取单页的商品id和销售状态，存入product字典
