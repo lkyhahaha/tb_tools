@@ -17,54 +17,20 @@
 
 # 优化1：获取当前时间，updatetime入库（已处理）
 # 优化2：导出cookie（getcookie.py）
-import datetime
 
 from lxml import html
-import re
-import json
 from time import sleep
 
 import requests
-from retrying import retry
 from pymysql import *
-
-
-# response --> str --> json
-def getJson(str):
-    p1 = re.compile(r'[(](.*?)[)]', re.S)
-    result_str = re.findall(p1, str)[0]
-    result_json = json.loads(result_str)
-    return result_json
-
-
-def getCuurenttime():
-    now = datetime.datetime.now()
-    current_time = datetime.datetime.strftime(now, '%Y-%m-%d %H:%M:%S')
-    return current_time
-
-
-def controldb(mysql_obj, sql):
-    # print('1')
-    # 创建游标对象
-    cur_obj = mysql_obj.cursor()
-    try:
-        cur_obj.execute(sql)
-        # 提交操作
-        mysql_obj.commit()
-        # print(sql)
-        print('插入数据成功\n' + sql)
-    except:
-        mysql_obj.rollback()
-        print('插入数据失败\n' + sql)
-
-    cur_obj.close()
+from qianniu1688 import tools
 
 
 def detail(url, cookies, headers):
     # print(cookies)
     response = requests.get(url, cookies=cookies, headers=headers)
     # print(response.text)
-    response_json = getJson(response.text)
+    response_json = tools.getJson(response.text)
     # print(response_json)
     # print(type(response_json))
 
@@ -86,14 +52,14 @@ def detail(url, cookies, headers):
             stock = 0
         # print(stock)
 
-        update_time = getCuurenttime()
+        update_time = tools.getCuurenttime()
 
         # 把数据写入数据库
 
         sql = 'insert into price_stock(itemid,itemurl,sku,price,stock,update_time) values (\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\")' % (
             itemid, itemurl, newsku, price, stock, update_time)
 
-        controldb(mysql_obj, sql)
+        tools.controldb(mysql_obj, sql)
     if itemid in fail_item:
         fail_item.remove(itemid)
     else:
@@ -115,17 +81,17 @@ def item(url, cookies, headers):
         for title in i:
             # print(title)
             sql = 'update price_stock set title=\"%s\" where itemid=\"%s\" and sku=\"%s\"' % (title, itemid, newsku)
-            controldb(mysql_obj, sql)
+            tools.controldb(mysql_obj, sql)
         n = result.xpath("//li [@data-value='{}']/a/span".format(newsku))
         for skuname in n:
             name = skuname.text
             print(newsku + name)
             sql = 'update price_stock set sku_title=\"%s\" where itemid=\"%s\" and sku=\"%s\"' % (name, itemid, newsku)
-            controldb(mysql_obj, sql)
-        update_time = getCuurenttime()
+            tools.controldb(mysql_obj, sql)
+        update_time = tools.getCuurenttime()
         sql = 'update price_stock set update_time=\"%s\" where itemid=\"%s\" and sku=\"%s\"' % (
             update_time, itemid, newsku)
-        controldb(mysql_obj, sql)
+        tools.controldb(mysql_obj, sql)
 
     if i == []:
         title_none = 1
@@ -141,15 +107,9 @@ if __name__ == '__main__':
                         charset='utf8mb4')
     print("数据库连接成功")
     sql = 'truncate table price_stock'
-    controldb(mysql_obj, sql)
+    tools.controldb(mysql_obj, sql)
     # 枚举itemid
-    itemid = ['682628841629', '682628893840', '682629885060', '683308540897', '683309088097', '683659301242',
-              '683772068974', '683774244669', '683951894890', '683951954010', '683952234437', '683998782707',
-              '684123453537', '684220105836', '684260735021', '684870251584', '685563720325', '685990624333',
-              '686190966897', '686337101767', '686337805638', '686487223945', '686618602595', '686620474835',
-              '686909999020', '686910479826', '686911823407', '686912367321', '689420852239', '689928673523',
-              '691412744949', '691415428909', '691738205618', '691738333242', '692010342132', '692279347473']
-    # itemid = ['683952234437', '684220105836', '685990624333', '691412744949']
+    itemid = ['682628841629', '682628893840', '682629885060', '683308540897', '683309088097', '683659301242', '683772068974', '683774244669', '683951894890', '683951954010', '683952234437', '683998782707', '684123453537', '684220105836', '684260735021', '684870251584', '685563720325', '685990624333', '686190966897', '686337101767', '686337805638', '686487223945', '686618602595', '686620474835', '686909999020', '686910479826', '686911823407', '686912367321', '689420852239', '689928673523', '691412744949', '691415428909', '691738205618', '691738333242', '692010342132', '692279347473']
 
     cookies = [
         {
@@ -169,28 +129,29 @@ if __name__ == '__main__':
 
     fail_item = []
     m = 1
-    total = len(itemid)
+
     # 失败重试
     while itemid != []:
-        for itemid in itemid:
-            itemurl = "https://item.taobao.com/item.htm?spm=a1z10.3-c.w4002-24537816225.9.6bfd6f73yJ9Wts&id=" + itemid
-            print("\n" + str(m) + "/" + str(total) + "正在抓取 " + itemid + " 数据")
+        total = len(itemid)
+        for item in itemid:
+            itemurl = "https://item.taobao.com/item.htm?spm=a1z10.3-c.w4002-24537816225.9.6bfd6f73yJ9Wts&id=" + item
+            print("\n" + str(m) + "/" + str(total) + "正在抓取 " + item + " 数据")
             print(itemurl)
             headers = {
                 # "Host": "item.taobao.com",
                 "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36",
                 "referer": itemurl
             }
-            detailurl = 'https://detailskip.taobao.com/service/getData/1/p1/item/detail/sib.htm?itemId=' + itemid + '&sellerId=2591219604&modules=dynStock,qrcode,viewer,price,duty,xmpPromotion,delivery,activity,fqg,zjys,couponActivity,soldQuantity,page,originalPrice,tradeContract&callback=onSibRequestSuccess'
+            detailurl = 'https://detailskip.taobao.com/service/getData/1/p1/item/detail/sib.htm?itemId=' + item + '&sellerId=2591219604&modules=dynStock,qrcode,viewer,price,duty,xmpPromotion,delivery,activity,fqg,zjys,couponActivity,soldQuantity,page,originalPrice,tradeContract&callback=onSibRequestSuccess'
 
             # detail(detailurl, cookies[0], headers)
             try:
                 # @retry(stop_max_attempt_number=5)
                 detail(detailurl, cookies[0], headers)
             except:
-                fail_item.append(itemid)
+                fail_item.append(item)
                 print(fail_item)
-                print(itemid + "detail抓取失败")
+                print(item + "detail抓取失败")
                 # raise Exception
                 continue
 

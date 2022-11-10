@@ -22,12 +22,10 @@ from time import sleep
 from pymysql import *
 
 from selenium.webdriver import ChromeOptions
-from selenium.webdriver.common.keys import Keys
+from qianniu1688 import tools
+
 
 # 登录
-from qianniu1688 import taobao
-
-
 def login():
     driver.switch_to.frame(0)
     username = driver.find_element_by_id("fm-login-id")
@@ -39,7 +37,7 @@ def login():
     submit = driver.find_element_by_class_name("fm-submit")
     submit.click()
     # 休眠手动输入验证码
-    sleep(10)
+    sleep(40)
 
 
 # 获取单页的商品id和销售状态，存入product字典
@@ -71,47 +69,45 @@ def getPageItem():
             mach = ""
         print(offer_id + ":" + status + "\t" + mach)
 
+        # if mach == '规格已匹配':
         if status in ("在售", "已下架"):
-            if mach == '规格已匹配':
-                product_mach.append(offer_id)
-                item = driver.find_element_by_xpath(
-                    "//*[@id='work_container']/div/div/div[2]/div[2]/div/div/div/div/div[3]/table/tbody/tr[{}]/td[5]/p[1]/a".format(
-                        i))
-                item_name = str(item.text)
-                item_url = str(item.get_attribute("href"))
-                item_id = item_url.replace("https://item.taobao.com/item.htm?id=", "")
-                relation[offer_id] = item_id
-                # print(relation)
+            product_mach.append(offer_id)
+            item = driver.find_element_by_xpath(
+                "//*[@id='work_container']/div/div/div[2]/div[2]/div/div/div/div/div[3]/table/tbody/tr[{}]/td[5]/p[1]/a".format(
+                    i))
+            item_name = str(item.text)
+            item_url = str(item.get_attribute("href"))
+            item_id = item_url.replace("https://item.taobao.com/item.htm?id=", "")
+            relation[offer_id] = item_id
+            # print(relation)
 
-                # 点击修改规格
-                alter = driver.find_element_by_xpath(
-                    "//*[@id='work_container']/div/div/div[2]/div[2]/div/div/div/div/div[3]/table/tbody/tr[{}]/td[8]/a[1]".format(
-                        i))
-                # href=“javascript:;” 无法直接点击
-                driver.execute_script("arguments[0].click();", alter)
-                sleep(3)
+            # 点击修改规格
+            alter = driver.find_element_by_xpath(
+                "//*[@id='work_container']/div/div/div[2]/div[2]/div/div/div/div/div[3]/table/tbody/tr[{}]/td[8]/a[1]".format(
+                    i))
+            # href=“javascript:;” 无法直接点击
+            driver.execute_script("arguments[0].click();", alter)
+            sleep(3)
 
-                sku_count = len(driver.find_elements_by_class_name("sku-value-tr"))
-                for s in range(1, sku_count + 1):
-                    item_sku_name = driver.find_element_by_xpath(
-                        "/html/body/div[3]/div/div[2]/div/div/div[2]/div[2]/div[3]/table/tr[{}]/td[1]/table/tr/td".format(
-                            s)).text
-                    offer_sku_name = driver.find_element_by_xpath(
-                        "/html/body/div[3]/div/div[2]/div/div/div[2]/div[2]/div[3]/table/tr[{}]/td[2]/table/tr/td/span".format(
-                            s)).get_attribute("value")
-                    print("item_sku_name:" + str(item_sku_name))
-                    print("offer_sku_name:" + str(offer_sku_name))
+            sku_count = len(driver.find_elements_by_class_name("sku-value-tr"))
+            for s in range(1, sku_count + 1):
+                item_sku_name = driver.find_element_by_xpath(
+                    "/html/body/div[3]/div/div[2]/div/div/div[2]/div[2]/div[3]/table/tr[{}]/td[1]/table/tr/td".format(
+                        s)).text
+                offer_sku_name = driver.find_element_by_xpath(
+                    "/html/body/div[3]/div/div[2]/div/div/div[2]/div[2]/div[3]/table/tr[{}]/td[2]/table/tr/td/span".format(
+                        s)).get_attribute("value")
+                print("item_sku_name:" + str(item_sku_name))
+                print("offer_sku_name:" + str(offer_sku_name))
 
-                    update_time = taobao.getCuurenttime()
-                    sql = 'insert into relation(item_name,item_id,item_sku_name,offer_id,offer_sku_name,update_time) values (\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\")' % (
-                        item_name, item_id, item_sku_name, offer_id, offer_sku_name, update_time)
-                    taobao.controldb(mysql_obj, sql)
+                update_time = tools.getCuurenttime()
+                sql = 'insert into relation(item_name,item_id,status,item_sku_name,offer_id,offer_sku_name,update_time) values (\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\")' % (
+                    item_name, item_id, status, item_sku_name, offer_id, offer_sku_name, update_time)
+                tools.controldb(mysql_obj, sql)
 
-                # 取消按钮
-                sleep(1)
-                driver.find_element_by_xpath("/html/body/div[3]/div/div[2]/div/div/div[3]/button[2]").click()
-        else:
-            pass
+            # 取消按钮
+            sleep(1)
+            driver.find_element_by_xpath("/html/body/div[3]/div/div[2]/div/div/div[3]/button[2]").click()
 
 
 # 判断下一页
@@ -163,7 +159,7 @@ if __name__ == '__main__':
                         charset='utf8mb4')
     print("数据库连接成功")
     sql_truncate = 'truncate table relation'
-    taobao.controldb(mysql_obj, sql_truncate)
+    tools.controldb(mysql_obj, sql_truncate)
 
     # 数据初始化
     url = "https://guanjia.1688.com/page/consignoffer.htm?menuCode=consignoffer"

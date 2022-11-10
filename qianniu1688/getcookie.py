@@ -32,7 +32,7 @@ while i < 8:
     cookieset.append(cookie_dict)
     # print("\n")
     # print(cookieset)
-    print("第" + str(i)+"个cookie抓取成功")
+    print("第" + str(i) + "个cookie抓取成功")
     i += 1
 
     sleep(3)

@@ -2,23 +2,25 @@
 
 # 问题1：有商品有规格选项和颜色选项，执行会报错，要加个判断（举例：抓娃娃机）
 
-# 问题2：除了前3个颜色的名称能抓取到，后面的颜色名称抓取成功率低（偶现）
+# 问题2：除了前3个颜色的名称能抓取到，后面的颜色名称抓取成功率低
 # 原因：可能是页面上没加载出来？加了向下滚动至按钮可见试试
 
 # 问题3：中途会出现滑块验证
 
+# 问题4：库存含有中文
+
 # 优化1：一开始的滑块验证
 # 优化2：获取当前时间，updatetime入库(已解决)
-# 优化3：淘宝和1688的关联关系（研究千牛）
+# 优化3：淘宝和1688的关联关系(已解决：albb_item.py)
 # 优化4：1688商品id目前只能枚举，看看有没有地方看到已铺货商品导出（已解决：albb_item.py）
-
+import re
 
 from selenium import webdriver
 from time import sleep
 
 from selenium.webdriver import ChromeOptions
 from pymysql import *
-import taobao
+from qianniu1688 import tools
 
 
 def getsku():
@@ -59,7 +61,9 @@ def getsku():
         try:
             stock = driver.find_element_by_xpath(
                 "//div [@id='sku-count-widget-wrapper']/div[{}]/div[2]/div[3]".format(i))
-            skustock = stock.text.strip("个可售")
+            # skustock = stock.text.strip("可售")
+            skustock = re.sub("\D", "", stock.text)
+            # number(skustock)
             if skustock == "":
                 fail_status += 1
                 print("抓取第" + str(i) + "个sku库存为空")
@@ -70,11 +74,11 @@ def getsku():
             print("抓取第" + str(i) + "个sku库存失败")
             continue
 
-        update_time = taobao.getCuurenttime()
+        update_time = tools.getCuurenttime()
 
         sql_product = 'insert into price_stock_1688(productId,product_name,sku,sku_name,sku_price,sku_stock,product_url,update_time) values (\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\")' % (
             itemid, product_name, skuid, skuname, skuprice, skustock, url, update_time)
-        taobao.controldb(mysql_obj, sql_product)
+        tools.controldb(mysql_obj, sql_product)
 
 
 if __name__ == '__main__':
@@ -82,7 +86,7 @@ if __name__ == '__main__':
                         charset='utf8mb4')
     print("数据库连接成功")
     sql_truncate = 'truncate table price_stock_1688'
-    taobao.controldb(mysql_obj, sql_truncate)
+    tools.controldb(mysql_obj, sql_truncate)
 
     option = ChromeOptions()
     option.add_experimental_option('excludeSwitches', ['enable-automation'])
