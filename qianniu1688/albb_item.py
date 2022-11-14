@@ -37,7 +37,7 @@ def login():
     submit = driver.find_element_by_class_name("fm-submit")
     submit.click()
     # 休眠手动输入验证码
-    sleep(40)
+    sleep(10)
 
 
 # 获取单页的商品id和销售状态，存入product字典
@@ -59,12 +59,12 @@ def getPageItem():
         # 销售状态
         status = driver.find_element_by_xpath(
             "//*[@id='work_container']/div/div/div[2]/div[2]/div/div/div/div/div[3]/table/tbody/tr[{}]/td[6]".format(
-                i)).text
+                i)).get_attribute("innerText")
         product[offer_id] = status
         try:
             mach = driver.find_element_by_xpath(
                 "//*[@id='work_container']/div/div/div[2]/div[2]/div/div/div/div/div[3]/table/tbody/tr[{}]/td[4]/div/div".format(
-                    i)).text
+                    i)).get_attribute("innerText")
         except:
             mach = ""
         print(offer_id + ":" + status + "\t" + mach)
@@ -75,7 +75,7 @@ def getPageItem():
             item = driver.find_element_by_xpath(
                 "//*[@id='work_container']/div/div/div[2]/div[2]/div/div/div/div/div[3]/table/tbody/tr[{}]/td[5]/p[1]/a".format(
                     i))
-            item_name = str(item.text)
+            item_name = str(item.get_attribute("innerText"))
             item_url = str(item.get_attribute("href"))
             item_id = item_url.replace("https://item.taobao.com/item.htm?id=", "")
             relation[offer_id] = item_id
@@ -93,7 +93,7 @@ def getPageItem():
             for s in range(1, sku_count + 1):
                 item_sku_name = driver.find_element_by_xpath(
                     "/html/body/div[3]/div/div[2]/div/div/div[2]/div[2]/div[3]/table/tr[{}]/td[1]/table/tr/td".format(
-                        s)).text
+                        s)).get_attribute("innerText")
                 offer_sku_name = driver.find_element_by_xpath(
                     "/html/body/div[3]/div/div[2]/div/div/div[2]/div[2]/div[3]/table/tr[{}]/td[2]/table/tr/td/span".format(
                         s)).get_attribute("value")
@@ -175,6 +175,7 @@ if __name__ == '__main__':
     login()
     # 进入淘管家-已铺货商品
     driver.get(url)
+    sleep(2)
 
     # 获取页面商品id、规格匹配的id
     getPageItem()

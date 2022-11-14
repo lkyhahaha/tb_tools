@@ -1,7 +1,8 @@
 -- 价格库存对比
 SELECT
-	r.item_name AS "商品名称",
-	r.item_sku_name AS "颜色分类",
+	ps.title AS "商品名称",
+	r. STATUS AS "淘宝销售状态",
+	ps.sku_title AS "颜色分类",
 	ps.price AS "淘宝定价",
 	r.offer_sku_name AS "1688颜色",
 	psa.sku_price AS "1688代发价",
@@ -11,8 +12,12 @@ SELECT
 		2
 	) AS "利润率",
 	ps.stock AS "淘宝库存",
-	psa.sku_stock AS "1688库存"
+	psa.sku_stock AS "1688库存",
+	psa.product_url AS "1688链接"
 FROM
 	relation r
-LEFT JOIN price_stock ps ON r.item_sku_name = ps.sku_title
-LEFT JOIN price_stock_1688 psa ON r.offer_sku_name = psa.sku_name
+right JOIN price_stock ps ON replace(r.item_sku_name," ","") = replace(ps.sku_title," ","")
+AND r.item_id = ps.itemid
+LEFT JOIN price_stock_1688 psa ON replace(r.offer_sku_name," ","") = replace(psa.sku_name," ","")
+AND r.offer_id = psa.productId
+where ps.sku !="def"

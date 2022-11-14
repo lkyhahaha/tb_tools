@@ -109,7 +109,8 @@ if __name__ == '__main__':
     sql = 'truncate table price_stock'
     tools.controldb(mysql_obj, sql)
     # 枚举itemid
-    itemid = ['682628841629', '682628893840', '682629885060', '683308540897', '683309088097', '683659301242', '683772068974', '683774244669', '683951894890', '683951954010', '683952234437', '683998782707', '684123453537', '684220105836', '684260735021', '684870251584', '685563720325', '685990624333', '686190966897', '686337101767', '686337805638', '686487223945', '686618602595', '686620474835', '686909999020', '686910479826', '686911823407', '686912367321', '689420852239', '689928673523', '691412744949', '691415428909', '691738205618', '691738333242', '692010342132', '692279347473']
+    itemid = ['682628841629', '682628893840', '682629885060', '683308540897', '683309088097', '683659301242', '683772068974', '683774244669', '683951894890', '683951954010', '683952234437', '683998782707', '684123453537', '684220105836', '684260735021', '684870251584', '685563720325', '685990624333', '686190966897', '686337101767', '686337805638', '686487223945', '686618602595', '686620474835', '686909999020', '686910479826', '686911823407', '686912367321', '689420852239', '689928673523', '691412744949', '691415428909', '691738205618', '691738333242', '691995476893', '692010342132', '692017422049', '692279347473', '692400342704', '692668655630']
+
 
     cookies = [
         {
@@ -133,25 +134,25 @@ if __name__ == '__main__':
     # 失败重试
     while itemid != []:
         total = len(itemid)
-        for item in itemid:
-            itemurl = "https://item.taobao.com/item.htm?spm=a1z10.3-c.w4002-24537816225.9.6bfd6f73yJ9Wts&id=" + item
-            print("\n" + str(m) + "/" + str(total) + "正在抓取 " + item + " 数据")
+        for itemid in itemid:
+            itemurl = "https://item.taobao.com/item.htm?spm=a1z10.3-c.w4002-24537816225.9.6bfd6f73yJ9Wts&id=" + itemid
+            print("\n" + str(m) + "/" + str(total) + "正在抓取 " + itemid + " 数据")
             print(itemurl)
             headers = {
                 # "Host": "item.taobao.com",
                 "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36",
                 "referer": itemurl
             }
-            detailurl = 'https://detailskip.taobao.com/service/getData/1/p1/item/detail/sib.htm?itemId=' + item + '&sellerId=2591219604&modules=dynStock,qrcode,viewer,price,duty,xmpPromotion,delivery,activity,fqg,zjys,couponActivity,soldQuantity,page,originalPrice,tradeContract&callback=onSibRequestSuccess'
+            detailurl = 'https://detailskip.taobao.com/service/getData/1/p1/item/detail/sib.htm?itemId=' + itemid + '&sellerId=2591219604&modules=dynStock,qrcode,viewer,price,duty,xmpPromotion,delivery,activity,fqg,zjys,couponActivity,soldQuantity,page,originalPrice,tradeContract&callback=onSibRequestSuccess'
 
             # detail(detailurl, cookies[0], headers)
             try:
                 # @retry(stop_max_attempt_number=5)
                 detail(detailurl, cookies[0], headers)
             except:
-                fail_item.append(item)
+                fail_item.append(itemid)
                 print(fail_item)
-                print(item + "detail抓取失败")
+                print(itemid + "detail抓取失败")
                 # raise Exception
                 continue
 
