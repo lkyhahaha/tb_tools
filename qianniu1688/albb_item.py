@@ -37,7 +37,7 @@ def login():
     submit = driver.find_element_by_class_name("fm-submit")
     submit.click()
     # 休眠手动输入验证码
-    sleep(10)
+    sleep(60)
 
 
 # 获取单页的商品id和销售状态，存入product字典
@@ -168,7 +168,7 @@ if __name__ == '__main__':
     relation = {}
     n = 1
     un = "15521080769"
-    pw = "Lky965823-"
+    pw = ""
 
     driver.get(url)
     # 跳转到登录页面
