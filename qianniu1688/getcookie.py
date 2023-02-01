@@ -11,7 +11,7 @@ driver.get(url)
 username = driver.find_element_by_id("fm-login-id")
 username.click()
 # 账号
-username.send_keys("15521080769")
+username.send_keys("")
 password = driver.find_element_by_id("fm-login-password")
 password.click()
 # 密码

@@ -167,7 +167,7 @@ if __name__ == '__main__':
     product_mach = []
     relation = {}
     n = 1
-    un = "15521080769"
+    un = ""
     pw = ""
 
     driver.get(url)
