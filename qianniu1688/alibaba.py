@@ -135,7 +135,7 @@ if __name__ == '__main__':
                 # sleep(1)
                 submit = driver.find_element_by_xpath("//div[@class='next-loading-wrap']/div/div[2]/div[3]/div/button[1]")
                 submit.click()
-                # sleep(1)
+                sleep(1)
                 logistics = driver.find_element_by_class_name("logistics-express").text
                 if logistics == "包邮":
                     logistics = 0
