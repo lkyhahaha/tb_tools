@@ -14,6 +14,7 @@ CREATE TABLE `price_stock` (
 CREATE TABLE `price_stock_1688` (
   `productId` varchar(250) NOT NULL,
   `product_name` varchar(500) DEFAULT NULL,
+  `logistics` varchar(50) DEFAULT NULL,
   `sku` varchar(250) DEFAULT NULL,
   `sku_name` varchar(250) DEFAULT NULL,
   `sku_price` varchar(50) DEFAULT NULL,
