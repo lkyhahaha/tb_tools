@@ -23,19 +23,28 @@ request请求接口获取淘宝商品价格库存信息，存入price_stock表
 ~~~~
 封装response格式化、获取当前时间、数据库操作方法
 ~~~~
-### **使用步骤：**
+### **代码原理：**
 ~~~~
-1.按database.DDL在数据库建好3张表
-2.albb_item.py导出匹配关系
+1.albb_item.py导出匹配关系
     _每天首次登录需密码登录和手机验证码，login()中休眠时间加大，后续运行可调至10s_
     （修改：main中mysql_obj中的数据库连接；un阿里巴巴账号；pw密码）
-3.将albb_item.py控制台输出的淘宝在售商品列表复制到alibaba.py的itemids里，运行
+2.将albb_item.py控制台输出的淘宝在售商品列表复制到alibaba.py的itemids里，运行
     一开始需要滑块验证，20个商品左右需要再次滑块验证
     （修改：main中mysql_obj中的数据库连接；itemids）
-4.运行tb_item.py，将控制台最后输出的数组复制到taobao.py的itemid中
-5.运行getcookie.py,需要密码和手机淘宝验证，将控制台输出的结果复制到taobao.py的cookies中
+3.运行tb_item.py，将控制台最后输出的数组复制到taobao.py的itemid中
+4.运行getcookie.py,需要密码和手机淘宝验证，将控制台输出的结果复制到taobao.py的cookies中
 （修改：username.send_keys("淘宝账号")；password.send_keys("淘宝密码")）
-6.运行taobao.py
+5.运行taobao.py
 （修改：main中mysql_obj中的数据库连接；cookies（第4点输出结果）；itemid（第3点输出结果））
-7.数据库查看结果，执行sql查询
+6.数据库查看结果，执行sql查询
+~~~~
+
+
+### **使用步骤：**
+~~~~
+1.按database.DDL在数据库建好表
+variable表必填字段：
+![img.png](img.png)
+1.运行getcookie.py,复制cookieset在控制台输出的值，替换到taobao.py的cookies中
+2.运行main.py
 ~~~~

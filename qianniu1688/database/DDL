@@ -33,3 +33,9 @@ CREATE TABLE `relation` (
   `update_time` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `variable` (
+  `key` varchar(50) DEFAULT NULL,
+  `value` varchar(250) DEFAULT NULL,
+  `update_time` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+

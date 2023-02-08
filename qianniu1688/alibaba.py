@@ -1,5 +1,5 @@
 # 抓取1688价格库存数据
-
+import os
 # 问题1：有商品有规格选项和颜色选项，执行会报错，要加个判断（举例：抓娃娃机）
 
 # 问题2：除了前3个颜色的名称能抓取到，后面的颜色名称抓取成功率低
@@ -21,6 +21,7 @@ from time import sleep
 from selenium.webdriver import ChromeOptions
 from pymysql import *
 from qianniu1688 import tools
+import albb_item
 
 
 def getsku():
@@ -77,7 +78,7 @@ def getsku():
         update_time = tools.getCuurenttime()
 
         sql_product = 'insert into price_stock_1688(productId,product_name,logistics,sku,sku_name,sku_price,sku_stock,product_url,update_time) values (\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\")' % (
-            itemid, product_name, logistics,skuid, skuname, skuprice, skustock, url, update_time)
+            itemid, product_name, logistics, skuid, skuname, skuprice, skustock, url, update_time)
         tools.controldb(mysql_obj, sql_product)
 
 
@@ -97,13 +98,21 @@ if __name__ == '__main__':
 
     # driver = webdriver.Chrome()
 
-    itemids = ['677766044544', '683104580152', '669052169822', '681688786854', '674588187519', '645763747545',
-               '678480221196', '649999853265', '688807014913', '672728166015', '676527350382', '680615136541',
-               '674753097881', '623392165199', '649654527723', '663686382031', '655990749842', '678373222207',
-               '684922867792', '655241160564', '610364573858', '676158252515', '593672520597', '638750254497',
-               '657930105302', '679844062811', '682871222899', '621844269195', '652469954533', '643914409183',
-               '626946615414', '661937814500', '662729457093', '597303088611', '676526444193', '682304010365',
-               '668983174869', '676891149817', '681392374055', '670188883840']
+    # itemids = ['677766044544', '683104580152', '669052169822', '681688786854', '674588187519', '645763747545',
+    #            '678480221196', '649999853265', '688807014913', '672728166015', '676527350382', '680615136541',
+    #            '674753097881', '623392165199', '649654527723', '663686382031', '655990749842', '678373222207',
+    #            '684922867792', '655241160564', '610364573858', '676158252515', '593672520597', '638750254497',
+    #            '657930105302', '679844062811', '682871222899', '621844269195', '652469954533', '643914409183',
+    #            '626946615414', '661937814500', '662729457093', '597303088611', '676526444193', '682304010365',
+    #            '668983174869', '676891149817', '681392374055', '670188883840']
+    sql_read = "select v_value from variable where v_key='albb_item'"
+    results = tools.readdb(mysql_obj, sql_read)
+    result = str(results).replace("((\"['", "").replace("']\",),)", "")
+    # print(result)
+    re = result.split('\', \'')
+    # print(type(re))
+    itemids = re
+    # print(type(itemids))
     fail_item = []
     item_404 = []
     total_item = len(itemids)
@@ -133,7 +142,8 @@ if __name__ == '__main__':
                 district = driver.find_element_by_xpath("//span[text()='东城区']")
                 district.click()
                 # sleep(1)
-                submit = driver.find_element_by_xpath("//div[@class='next-loading-wrap']/div/div[2]/div[3]/div/button[1]")
+                submit = driver.find_element_by_xpath(
+                    "//div[@class='next-loading-wrap']/div/div[2]/div[3]/div/button[1]")
                 submit.click()
                 sleep(1)
                 logistics = driver.find_element_by_class_name("logistics-express").text

@@ -37,7 +37,7 @@ def login():
     submit = driver.find_element_by_class_name("fm-submit")
     submit.click()
     # 休眠手动输入验证码
-    sleep(60)
+    sleep(10)
 
 
 # 获取单页的商品id和销售状态，存入product字典
@@ -128,15 +128,18 @@ def getOnsale():
     ready = []
     onoff = []
     other = []
+    item = []
     for t in product.keys():
         if product[t] == '在售':
             onsale.append(t)
+            item.append(t)
         elif product[t] == '未上架':
             ready.append(t)
         elif product[t] == '已下架':
             onoff.append(t)
         else:
             other.append(t)
+            item.append(t)
 
     print("\n淘宝在售商品列表：")
     print(onsale)
@@ -146,6 +149,7 @@ def getOnsale():
     print(onoff)
     print("\n其他：")
     print(other)
+    return item
 
 
 if __name__ == '__main__':
@@ -167,8 +171,15 @@ if __name__ == '__main__':
     product_mach = []
     relation = {}
     n = 1
-    un = ""
-    pw = ""
+    # 查询数据库用户名参数
+    sql_un = 'select v_value from variable where v_key="albb_username"'
+    username = tools.readdb(mysql_obj, sql_un)
+    un = str(username).replace("(('", "").replace("',),)", "")
+
+    # 查询数据库密码参数
+    sql_pw = 'select v_value from variable where v_key="albb_password"'
+    password = tools.readdb(mysql_obj, sql_pw)
+    pw = str(password).replace("(('", "").replace("',),)", "")
 
     driver.get(url)
     # 跳转到登录页面
@@ -187,4 +198,12 @@ if __name__ == '__main__':
 
     print(product)
     getOnsale()
+    albb_item = getOnsale()
+    print("item:" + str(albb_item))
+
+    update_time = tools.getCuurenttime()
+    sql_update = "update variable set v_value=\"%s\" , update_time=\"%s\" where v_key='albb_item'" % (
+        albb_item, update_time)
+    tools.controldb(mysql_obj, sql_update)
     driver.quit()
+    mysql_obj.close()

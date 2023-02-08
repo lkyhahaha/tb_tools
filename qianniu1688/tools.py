@@ -34,3 +34,14 @@ def controldb(mysql_obj, sql):
         print('插入数据失败\n' + sql)
 
     cur_obj.close()
+
+
+def readdb(mysql_obj, sql):
+    cur_obj = mysql_obj.cursor()
+    try:
+        cur_obj.execute(sql)
+        results = cur_obj.fetchall()
+        # print(results)
+        return results
+    except:
+        mysql_obj.rollback()
