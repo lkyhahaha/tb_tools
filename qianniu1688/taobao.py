@@ -120,7 +120,7 @@ if __name__ == '__main__':
     itemid = re
 
 
-    cookies = [{'Cookies': ''}, {'Cookies': ''}]
+    cookies = [{'Cookies': ''}]
 
     fail_item = []
     m = 1

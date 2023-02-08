@@ -109,9 +109,9 @@ if __name__ == '__main__':
     results = tools.readdb(mysql_obj, sql_read)
     result = str(results).replace("((\"['", "").replace("']\",),)", "")
     # print(result)
-    re = result.split('\', \'')
+    res = result.split('\', \'')
     # print(type(re))
-    itemids = re
+    itemids = res
     # print(type(itemids))
     fail_item = []
     item_404 = []

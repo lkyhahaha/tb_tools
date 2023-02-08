@@ -46,6 +46,9 @@ def getPageItem():
     sleep(3)
     pagecount = len(driver.find_elements_by_class_name("item-title"))
     print("正在抓取第" + str(n) + "页 " + str(pagecount) + "个商品")
+    if pagecount == 0:
+        driver.refresh()
+        sleep(3)
     for i in range(1, pagecount + 1):
         # print(i)
         offer = driver.find_element_by_xpath(
