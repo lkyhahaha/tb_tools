@@ -76,8 +76,8 @@ def getsku():
 
         update_time = tools.getCuurenttime()
 
-        sql_product = 'insert into price_stock_1688(productId,product_name,sku,sku_name,sku_price,sku_stock,product_url,update_time) values (\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\")' % (
-            itemid, product_name, skuid, skuname, skuprice, skustock, url, update_time)
+        sql_product = 'insert into price_stock_1688(productId,product_name,logistics,sku,sku_name,sku_price,sku_stock,product_url,update_time) values (\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\")' % (
+            itemid, product_name, logistics,skuid, skuname, skuprice, skustock, url, update_time)
         tools.controldb(mysql_obj, sql_product)
 
 
@@ -93,11 +93,19 @@ if __name__ == '__main__':
     option.add_argument("--disable-blink-features=AutomationControlled")
 
     driver = webdriver.Chrome(options=option)
+    # driver.maximize_window()
 
     # driver = webdriver.Chrome()
 
-    itemids = ['677766044544', '683104580152', '669052169822', '681688786854', '674588187519', '645763747545', '678480221196', '649999853265', '688807014913', '672728166015', '676527350382', '680615136541', '674753097881', '623392165199', '649654527723', '663686382031', '655990749842', '678373222207', '684922867792', '655241160564', '610364573858', '676158252515', '593672520597', '638750254497', '657930105302', '679844062811', '682871222899', '621844269195', '652469954533', '643914409183', '626946615414', '661937814500', '662729457093', '597303088611', '676526444193', '682304010365', '668983174869', '676891149817', '681392374055', '670188883840']
+    itemids = ['677766044544', '683104580152', '669052169822', '681688786854', '674588187519', '645763747545',
+               '678480221196', '649999853265', '688807014913', '672728166015', '676527350382', '680615136541',
+               '674753097881', '623392165199', '649654527723', '663686382031', '655990749842', '678373222207',
+               '684922867792', '655241160564', '610364573858', '676158252515', '593672520597', '638750254497',
+               '657930105302', '679844062811', '682871222899', '621844269195', '652469954533', '643914409183',
+               '626946615414', '661937814500', '662729457093', '597303088611', '676526444193', '682304010365',
+               '668983174869', '676891149817', '681392374055', '670188883840']
     fail_item = []
+    item_404 = []
     total_item = len(itemids)
     m = 1
     product = {}
@@ -111,30 +119,58 @@ if __name__ == '__main__':
         #     action = ActionChains(driver)
         #     action.drag_and_drop_by_offset(huakuai,xoffset=300,yoffset=0).perform()
         # except:
-        product_name = driver.find_element_by_class_name("title-text").text
-        product[itemid] = product_name
-        sku_name = driver.find_elements_by_class_name("sku-item-name")
-        sku_count = len(sku_name)
-        print(
-            "\n" + str(m) + "/" + str(total_item) + "\t开始抓取" + itemid + "\t共" + str(sku_count) + "个sku：" + product_name)
-
         try:
-            morebutton = driver.find_element_by_class_name("sku-wrapper-expend-button")
-            # 向下滚动至按钮可见
-            driver.execute_script("arguments[0].scrollIntoView();", morebutton)
-            morebutton.click()
-            sleep(2)
-            getsku()
-        except:
-            getsku()
-        m += 1
+            product_name = driver.find_element_by_class_name("title-text").text
+            product[itemid] = product_name
+            # 抓取到北京的运费
+            try:
+                select = driver.find_element_by_class_name("next-select-inner")
+                select.click()
+                province = driver.find_element_by_xpath("//span[text()='北京']")
+                province.click()
+                city = driver.find_element_by_xpath("//span[text()='北京市']")
+                city.click()
+                district = driver.find_element_by_xpath("//span[text()='东城区']")
+                district.click()
+                # sleep(1)
+                submit = driver.find_element_by_xpath("//div[@class='next-loading-wrap']/div/div[2]/div[3]/div/button[1]")
+                submit.click()
+                # sleep(1)
+                logistics = driver.find_element_by_class_name("logistics-express").text
+                if logistics == "包邮":
+                    logistics = 0
 
-        # print(fail_status)
-        if fail_status > 0:
-            fail_item.append(itemid)
-        else:
-            pass
+            except:
+                logistics = driver.find_element_by_xpath("//div[@class='logistics-wrapper']/div[1]/span[2]").text
+                if logistics == "卖家承担运费":
+                    logistics = 0
+
+            sku_name = driver.find_elements_by_class_name("sku-item-name")
+            sku_count = len(sku_name)
+            print(
+                "\n" + str(m) + "/" + str(total_item) + "\t开始抓取" + itemid + "\t共" + str(
+                    sku_count) + "个sku：" + product_name + "\n运费：" + str(logistics))
+
+            try:
+                morebutton = driver.find_element_by_class_name("sku-wrapper-expend-button")
+                # 向下滚动至按钮可见
+                driver.execute_script("arguments[0].scrollIntoView();", morebutton)
+                morebutton.click()
+                sleep(2)
+                getsku()
+            except:
+                getsku()
+            m += 1
+
+            # print(fail_status)
+            if fail_status > 0:
+                fail_item.append(itemid)
+            else:
+                pass
+        except:
+            item_404.append(itemid)
     # print(product)
+    print("404商品列表：" + str(item_404))
     print("失败商品列表：" + str(fail_item))
     for f in fail_item:
         print(str(f) + ":" + str(product[f]))
