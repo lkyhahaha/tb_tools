@@ -43,8 +43,8 @@ request请求接口获取淘宝商品价格库存信息，存入price_stock表
 ### **使用步骤：**
 ~~~~
 1.按database.DDL在数据库建好表
-variable表必填字段：
-![Image](https://github.com/lkyhahaha/tb_tools/blob/ed84d6a032664320745bdb56ef52b7db49ef80aa/img.png)
 1.运行getcookie.py,复制cookieset在控制台输出的值，替换到taobao.py的cookies中
 2.运行main.py
 ~~~~
+variable表必填字段：
+![Image](https://github.com/lkyhahaha/tb_tools/blob/ed84d6a032664320745bdb56ef52b7db49ef80aa/img.png)
